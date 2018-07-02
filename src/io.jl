@@ -4,7 +4,7 @@
 using HDF5
 using LightXML
 
-type Xdmf
+mutable struct Xdmf
     name :: String
     xml :: XMLElement
     hdf :: HDF5File
@@ -237,7 +237,7 @@ function save!(xdmf::Xdmf)
     save_file(doc, xmffile(xdmf))
 end
 
-function new_dataitem{T,N}(xdmf::Xdmf, path::String, data::Array{T,N})
+function new_dataitem(xdmf::Xdmf, path::String, data::Array{T,N}) where {T,N}
     dataitem = new_element("DataItem")
     datatype = replace("$T", "64", "")
     dimensions = join(reverse(size(data)), " ")
@@ -265,7 +265,7 @@ function new_dataitem{T,N}(xdmf::Xdmf, path::String, data::Array{T,N})
 end
 
 """ Create a new DataItem element, hdf path automatically determined. """
-function new_dataitem{T,N}(xdmf::Xdmf, data::Array{T,N})
+function new_dataitem(xdmf::Xdmf, data::Array{T,N}) where {T,N}
     if xdmf.format == "XML"
         # Path can be whatever as XML format does not store to HDF at all
         return new_dataitem(xdmf, "/whatever", data)
